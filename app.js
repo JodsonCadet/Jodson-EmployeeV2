@@ -3,18 +3,16 @@ const app = express();
 export default app;
 app.use(express.json());
 
-// import employees from "#db/employees";
-app.use("/employees", allEmployees);
-
+import employeesRouter from "./db/api/allEmployees.js";
 
 app.route("/").get((req, res) => {
   res.send("Hello employees!");
 });
 
-app.use("/employees", allEmployees);
+app.use("/employees", employeesRouter);
 
 app.use((err, req, res, next) => {
-  res.status(500).send(error.message);
+  res.status(500).send(err.message);
 });
 
 

@@ -4,40 +4,49 @@ export default router;
 
 import employees from "#db/employees";
 
-router.route("/").get((req, res) => {return res.send(employees)})
-    
+router.route("/").get((req, res) => {
+    if (employees.length > 0){
+        return res.send(employees);
+    }else {
+        return res.status(400).send("cannot fetch employees")
+    }
+});
 
-router.route("/").post(( req, res, next ) => {
-        const { name } = req.body;
-        const lastEmployee = employees[employees.length -1];
-
+router.route("/").post(( req, res, next) => {
+    const { name } = req.body || {};
+    if (name && name.length > 0 ){
+        const lastEmployee = employees[employees.length - 1];
         let id = lastEmployee.id;
-
-        id++;
-
+        id++
         const obj = {
             id,
             name,
         };
-
         employees.push(obj);
-        return res.send(obj)
-    });
-    router.route("/random").get((req, res) => {
-        const randomIndex = Math.floor(Math.random() * employees.length);
-       return res.send(employees[randomIndex]);
-    })
+        return res.status(201).send(obj);
+    } else {
+        return res.status(400).send("please include a name")
+    }
+  });
 
-    router.route("/:id").get((req, res) => {
-        const { id } = req.params;
+router.route("/random").get((req, res) => {
+    if(isNaN) {
+  const randomIndex = Math.floor(Math.random() * employees.length);
+  return res.send(employees[randomIndex]);
+    } else {
+        return res.status(400).send("random number error")
+    }
+});
 
-        if (!employee) {
-            return res.status(404).send("Employee not found");
-        } if (id > employees.length) {
-            return res.status(404).send("Employee id not found");
-        } 
+router.route("/:id").get((req, res) => {
+  const { id } = req.params;
 
-        return res.send(employee);
-    })
+  const employee = employees.find(temp => temp.id == id);
 
-
+  if (!employee) {
+    return res.status(404).send("Employee not found");
+  } if (id > employees.length) {
+    return res.status(400).send("employee id not found")
+  }
+  return res.send(employee);
+});
